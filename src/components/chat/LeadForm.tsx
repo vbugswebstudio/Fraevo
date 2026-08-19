@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { submitLead } from "@/lib/leads";
 
 interface LeadFormProps {
   summary?: Record<string, unknown>;
@@ -27,22 +28,14 @@ export function LeadForm({ summary, onDone }: LeadFormProps) {
     setStatus("loading");
     setError("");
     try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, summary }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setStatus("error");
-        setError(data.error ?? "Something went wrong. Please try again.");
-        return;
-      }
+      await submitLead({ ...form, summary: summary ?? null });
       setStatus("done");
       onDone?.();
-    } catch {
+    } catch (err) {
       setStatus("error");
-      setError("Network error. Please try again.");
+      setError(
+        err instanceof Error ? err.message : "Something went wrong. Please try again."
+      );
     }
   }
 

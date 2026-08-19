@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { ArrowUpRight, Check } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
 import { useChat } from "@/components/chat/ChatContext";
+import { submitLead } from "@/lib/leads";
 
 export function FinalCTA() {
   const { open: openChat } = useChat();
@@ -24,21 +25,13 @@ export function FinalCTA() {
     setStatus("loading");
     setError("");
     try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setStatus("error");
-        setError(data.error ?? "Something went wrong. Please try again.");
-        return;
-      }
+      await submitLead(form);
       setStatus("done");
-    } catch {
+    } catch (err) {
       setStatus("error");
-      setError("Network error. Please try again.");
+      setError(
+        err instanceof Error ? err.message : "Something went wrong. Please try again."
+      );
     }
   }
 
