@@ -43,3 +43,6 @@ dev-server.log
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# backup of removed API routes (not deployable on static GitHub Pages)
+/src/api-backup
